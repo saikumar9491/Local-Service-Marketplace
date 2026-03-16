@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 
 import authRoutes from './routes/auth.route.js';
 import workerRoutes from './routes/worker.route.js';
@@ -34,6 +35,14 @@ app.use('/api/workers', workerRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/reviews', reviewRoutes);
+
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(process.cwd(), "../frontend/dist")));
+
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(process.cwd(), "../frontend/dist", "index.html"));
+    });
+}
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
